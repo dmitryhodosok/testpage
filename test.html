@@ -79,7 +79,7 @@
         // This script simulates a conversion event when the user clicks the button.
         conversionButton.addEventListener('click', () => {
             // Ensure offer_id was present for the conversion step too
-            if (!offer_id) {
+            if (!offerId) {
                  statusDiv.textContent = 'Cannot trigger conversion without an `offer_id` from the URL.';
                  statusDiv.className = 'p-4 rounded-md text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
                  return;
@@ -87,10 +87,10 @@
 
             // This block attempts to track the conversion event.
             try {
-                const clickId = ASDK.clickId(offer_id);
+                const clickId = ASDK.clickId(offerId);
 
                 if (!clickId) {
-                    const message = `No clickId found for offer_id '${offer_id}'. A page visit (click) must be tracked first.`;
+                    const message = `No clickId found for offerId '${offerId}'. A page visit (click) must be tracked first.`;
                     console.error(message);
                     statusDiv.textContent = message;
                     statusDiv.className = 'p-4 rounded-md text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
@@ -99,7 +99,7 @@
 
                 ASDK.conversion({
                     click_id: clickId,
-                    offer_id: offer_id,
+                    offer_id: offerId,
                     status: '1',                  // 1 = confirmed
                     sum: '19.99',                 // Example order sum
                     action_id: `ORDER-${Date.now()}`, // Example unique order ID
