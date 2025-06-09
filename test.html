@@ -46,22 +46,24 @@
         // This script simulates a user visiting the page.
         // We'll use placeholder values for offer_id and affiliate_id.
         try {
-            ASDK.click({
-                offer_id: offer_id,      // Replace with a real offer_id
-                affiliate_id: aff_id // Replace with a real affiliate_id (pid)
-            }).then(clickId => {
-                console.log('Click tracked successfully:', clickId);
-                statusDiv.textContent = `Page visit (click) tracked successfully. Click ID: ${clickId}`;
-                statusDiv.classList.add('bg-green-100', 'dark:bg-green-900', 'text-green-800', 'dark:text-green-200');
-            }).catch(error => {
-                console.error('Error tracking click:', error);
-                statusDiv.textContent = 'Error tracking page visit (click). See console for details.';
-                statusDiv.classList.add('bg-red-100', 'dark:bg-red-900', 'text-red-800', 'dark:text-red-200');
+            document.addEventListener('DOMContentLoaded', function() {
+                // 1. Get tracking parameters from URL
+                const offerId = ASDK.urlParameter('offer_id') || 'DEFAULT_OFFER';
+                const affiliateId = ASDK.urlParameter('aff_id') || 'DEFAULT_AFFILIATE';
+            
+                // 2. Generate a click
+                ASDK.click({
+                    offer_id: offerId,
+                    affiliate_id: affiliateId,
+                    user_agent: navigator.userAgent
+                })
+                .then(clickId => {
+                    console.log('Tracking initialized:', clickId);
+                })
+                .catch(error => {
+                    console.error('Tracking error:', error.message);
+                });
             });
-        } catch (error) {
-            console.error('ASDK.click function not found or failed to execute:', error);
-            statusDiv.textContent = 'The ASDK library might be blocked or failed to load.';
-            statusDiv.classList.add('bg-yellow-100', 'dark:bg-yellow-900', 'text-yellow-800', 'dark:text-yellow-200');
         }
 
 
