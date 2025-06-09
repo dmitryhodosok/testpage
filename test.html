@@ -48,7 +48,7 @@
         const affiliateId = ASDK.urlParameter('aff_id') || 'DEFAULT_AFFILIATE';
 
         // Check if required URL parameters are present for a valid test
-        if (!offer_id || !aff_id) {
+        if (!offerId || !affiliateId) {
             statusDiv.textContent = 'Error: `offer_id` and `aff_id` must be provided as URL parameters for a complete test.';
             statusDiv.classList.add('bg-red-100', 'dark:bg-red-900', 'text-red-800', 'dark:text-red-200');
         } else {
@@ -56,8 +56,8 @@
             // This block attempts to track the click event.
             try {
                 ASDK.click({
-                    offer_id: offer_id,
-                    affiliate_id: aff_id
+                    offer_id: offerId,
+                    affiliate_id: affiliateId
                 }).then(clickId => {
                     console.log('Click tracked successfully:', clickId);
                     statusDiv.textContent = `Page visit (click) tracked successfully. Click ID: ${clickId}`;
