@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Tracking Test Page</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ad Tracking SDK -->
+    <script src="https://csdemo.g2afse.com/websdk.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Tracking Test Page</h1>
+                <p class="text-gray-600 dark:text-gray-400 mb-6">This page is designed to test the ad tracking scripts.</p>
+            </div>
+
+            <div id="status" class="mb-6 p-4 rounded-md text-sm"></div>
+
+            <button id="conversion-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                Trigger Conversion
+            </button>
+        </div>
+        <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
+            <p>Note: Open your browser's developer console to see tracking logs.</p>
+        </div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const conversionButton = document.getElementById('conversion-button');
+
+        // --- 1. Click Tracking (on page load) ---
+        // This script simulates a user visiting the page.
+        // We'll use placeholder values for offer_id and affiliate_id.
+        try {
+            ASDK.click({
+                offer_id: offer_id,      // Replace with a real offer_id
+                affiliate_id: aff_id // Replace with a real affiliate_id (pid)
+            }).then(clickId => {
+                console.log('Click tracked successfully:', clickId);
+                statusDiv.textContent = `Page visit (click) tracked successfully. Click ID: ${clickId}`;
+                statusDiv.classList.add('bg-green-100', 'dark:bg-green-900', 'text-green-800', 'dark:text-green-200');
+            }).catch(error => {
+                console.error('Error tracking click:', error);
+                statusDiv.textContent = 'Error tracking page visit (click). See console for details.';
+                statusDiv.classList.add('bg-red-100', 'dark:bg-red-900', 'text-red-800', 'dark:text-red-200');
+            });
+        } catch (error) {
+            console.error('ASDK.click function not found or failed to execute:', error);
+            statusDiv.textContent = 'The ASDK library might be blocked or failed to load.';
+            statusDiv.classList.add('bg-yellow-100', 'dark:bg-yellow-900', 'text-yellow-800', 'dark:text-yellow-200');
+        }
+
+
+        // --- 2. Conversion Tracking (on button click) ---
+        // This script simulates a conversion event when the user clicks the button.
+        conversionButton.addEventListener('click', () => {
+            try {
+                const clickId = ASDK.clickId(offer_id);
+
+                if (!clickId) {
+                    const message = `No clickId found for offer_id '${offer_id}'. A click must be tracked first.`;
+                    console.error(message);
+                    statusDiv.textContent = message;
+                    statusDiv.className = 'p-4 rounded-md text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
+                    return;
+                }
+
+                ASDK.conversion({
+                    click_id: clickId,
+                    offer_id: offer_id,
+                    status: '1',                  // 1 = confirmed
+                    sum: '19.99',                 // Example order sum
+                    action_id: `ORDER-${Date.now()}`, // Example unique order ID
+                    custom_field1: '19.99'        // Example sale amount
+                }).then(() => {
+                    console.log('Conversion tracked successfully');
+                    statusDiv.textContent = 'Conversion event tracked successfully!';
+                    statusDiv.className = 'p-4 rounded-md text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
+                }).catch(error => {
+                    console.error('Error tracking conversion:', error);
+                    statusDiv.textContent = 'Error tracking conversion event. See console for details.';
+                    statusDiv.className = 'p-4 rounded-md text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
+                });
+
+            } catch (error) {
+                 console.error('ASDK.conversion function not found or failed to execute:', error);
+                 statusDiv.textContent = 'The ASDK library might be blocked or failed to load.';
+                 statusDiv.className = 'p-4 rounded-md text-sm bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200';
+            }
+        });
+    </script>
+
+</body>
+</html>
