@@ -43,9 +43,9 @@
         const conversionButton = document.getElementById('conversion-button');
 
         // --- Get parameters from URL ---
-        // This is necessary to get the offer_id and aff_id for the tracking calls.
-        const offerId = ASDK.urlParameter('offer_id') || 'DEFAULT_OFFER';
-        const affiliateId = ASDK.urlParameter('aff_id') || 'DEFAULT_AFFILIATE';
+        // This is necessary to get the offerId and affiliateId for the tracking calls.
+        const offerId = ASDK.urlParameter('offer_id');
+        const affiliateId = ASDK.urlParameter('aff_id');
 
         // Check if required URL parameters are present for a valid test
         if (!offerId || !affiliateId) {
@@ -78,7 +78,7 @@
         // --- 2. Conversion Tracking (on button click) ---
         // This script simulates a conversion event when the user clicks the button.
         conversionButton.addEventListener('click', () => {
-            // Ensure offer_id was present for the conversion step too
+            // Ensure offerId was present for the conversion step too
             if (!offerId) {
                  statusDiv.textContent = 'Cannot trigger conversion without an `offer_id` from the URL.';
                  statusDiv.className = 'p-4 rounded-md text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
