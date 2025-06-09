@@ -42,39 +42,55 @@
         const statusDiv = document.getElementById('status');
         const conversionButton = document.getElementById('conversion-button');
 
-        // --- 1. Click Tracking (on page load) ---
-        // This script simulates a user visiting the page.
-        // We'll use placeholder values for offer_id and affiliate_id.
-        try {
-            document.addEventListener('DOMContentLoaded', function() {
-                // 1. Get tracking parameters from URL
-                const offerId = ASDK.urlParameter('offer_id') || 'DEFAULT_OFFER';
-                const affiliateId = ASDK.urlParameter('aff_id') || 'DEFAULT_AFFILIATE';
-            
-                // 2. Generate a click
+        // --- Get parameters from URL ---
+        // This is necessary to get the offer_id and aff_id for the tracking calls.
+        const offerId = ASDK.urlParameter('offer_id') || 'DEFAULT_OFFER';
+        const affiliateId = ASDK.urlParameter('aff_id') || 'DEFAULT_AFFILIATE';
+
+        // Check if required URL parameters are present for a valid test
+        if (!offer_id || !aff_id) {
+            statusDiv.textContent = 'Error: `offer_id` and `aff_id` must be provided as URL parameters for a complete test.';
+            statusDiv.classList.add('bg-red-100', 'dark:bg-red-900', 'text-red-800', 'dark:text-red-200');
+        } else {
+            // --- 1. Click Tracking (on page load) ---
+            // This block attempts to track the click event.
+            try {
                 ASDK.click({
-                    offer_id: offerId,
-                    affiliate_id: affiliateId,
-                    user_agent: navigator.userAgent
-                })
-                .then(clickId => {
-                    console.log('Tracking initialized:', clickId);
-                })
-                .catch(error => {
-                    console.error('Tracking error:', error.message);
+                    offer_id: offer_id,
+                    affiliate_id: aff_id
+                }).then(clickId => {
+                    console.log('Click tracked successfully:', clickId);
+                    statusDiv.textContent = `Page visit (click) tracked successfully. Click ID: ${clickId}`;
+                    statusDiv.classList.add('bg-green-100', 'dark:bg-green-900', 'text-green-800', 'dark:text-green-200');
+                }).catch(error => {
+                    console.error('Error tracking click:', error);
+                    statusDiv.textContent = 'Error tracking page visit (click). See console for details.';
+                    statusDiv.classList.add('bg-red-100', 'dark:bg-red-900', 'text-red-800', 'dark:text-red-200');
                 });
-            });
+            } catch (error) {
+                console.error('ASDK.click function not found or failed to execute:', error);
+                statusDiv.textContent = 'The ASDK library might be blocked or failed to load.';
+                statusDiv.classList.add('bg-yellow-100', 'dark:bg-yellow-900', 'text-yellow-800', 'dark:text-yellow-200');
+            }
         }
 
 
         // --- 2. Conversion Tracking (on button click) ---
         // This script simulates a conversion event when the user clicks the button.
         conversionButton.addEventListener('click', () => {
+            // Ensure offer_id was present for the conversion step too
+            if (!offer_id) {
+                 statusDiv.textContent = 'Cannot trigger conversion without an `offer_id` from the URL.';
+                 statusDiv.className = 'p-4 rounded-md text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
+                 return;
+            }
+
+            // This block attempts to track the conversion event.
             try {
                 const clickId = ASDK.clickId(offer_id);
 
                 if (!clickId) {
-                    const message = `No clickId found for offer_id '${offer_id}'. A click must be tracked first.`;
+                    const message = `No clickId found for offer_id '${offer_id}'. A page visit (click) must be tracked first.`;
                     console.error(message);
                     statusDiv.textContent = message;
                     statusDiv.className = 'p-4 rounded-md text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
